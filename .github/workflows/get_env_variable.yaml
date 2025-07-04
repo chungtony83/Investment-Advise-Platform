@@ -1,0 +1,25 @@
+name: Schwab API Bot  # A name for your workflow
+
+on: [push]  # When to trigger this workflow (e.g. on every git push)
+
+jobs:
+  run-bot:  # Job name
+    runs-on: ubuntu-latest  # What machine to use (Linux VM)
+
+    env:  # Environment variables (can load secrets here)
+      SCHWAB_CLIENT_ID: ${{ secrets.SCHWAB_CLIENT_ID }}
+      SCHWAB_CLIENT_SECRET: ${{ secrets.SCHWAB_CLIENT_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v3  # Step 1: checkout your code
+
+      - name: Set up Python  # Step 2: set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies  # Step 3: install Python packages
+        run: pip install -r requirements.txt
+
+      - name: Run trading bot  # Step 4: run your Python script
+        run: python your_script.py
