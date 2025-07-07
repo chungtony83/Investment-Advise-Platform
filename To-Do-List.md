@@ -2,11 +2,11 @@
 
 ## ✅ Initial Setup
 
-* [ ] Create and initialize GitHub repository
-* [ ] Set up .gitignore and README.md
+* [x] Create and initialize GitHub repository
+* [x] Set up .gitignore and README.md
 * [ ] Set up Python virtual environment
 * [ ] Design initial database schema (SQLite or PostgreSQL)
-* [ ] Set up issue tracking and project board in GitHub
+* [x] Set up issue tracking and project board in GitHub
 * [ ] Create a developer setup guide for onboarding
 
 ## 🔑 API Integration
