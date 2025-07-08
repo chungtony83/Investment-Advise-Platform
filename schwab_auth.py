@@ -10,6 +10,10 @@ import json
 import time
 import os
 import subprocess
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # Automatically loads from ".env" in the current directory
 
 # Set these before running
 GITHUB_USER = "chungtony83"
@@ -41,8 +45,6 @@ def write_token_file(filename: str, data: bytes):
     with open(os.path.join(REPO_DIR, filename), "wb") as f:
         f.write(data)
 
-key = ''
-# key = Fernet(open(path, "rb").read())
 
 def get_refresh_token() -> None:
     client_id = key.decrypt(open('./tokens/client_id.enc', 'rb').read()).decode()
@@ -152,7 +154,7 @@ if __name__ == "__main__":
     # client_id = key.decrypt(open('./tokens/client_id.enc', 'rb').read()).decode()
     # token = key.decrypt(open('./tokens/refresh_token.enc', 'rb').read()).decode()
     # token = get_auth_token(manual_update_refresh_code=True)
-    
+    clone_or_pull_repo()
     
     # Pull latest tokens before doing anything
     # Read a token
