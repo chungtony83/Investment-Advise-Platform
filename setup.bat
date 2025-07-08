@@ -1,6 +1,8 @@
 @echo off
 echo Setting up Python virtual environment...
 
+python -m pip install --upgrade pip
+
 REM Create virtual environment
 python -m venv venv
 

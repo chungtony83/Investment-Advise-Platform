@@ -8,7 +8,6 @@ import warnings
 from cryptography.fernet import Fernet
 import json
 import time
-
 import os
 import subprocess
 
@@ -42,7 +41,7 @@ def write_token_file(filename: str, data: bytes):
     with open(os.path.join(REPO_DIR, filename), "wb") as f:
         f.write(data)
 
-
+key = ''
 # key = Fernet(open(path, "rb").read())
 
 def get_refresh_token() -> None:
@@ -156,8 +155,6 @@ if __name__ == "__main__":
     
     
     # Pull latest tokens before doing anything
-    clone_or_pull_repo()
-
     # Read a token
     # refresh_token_encrypted = get_token_file("refresh_token.enc")
 
