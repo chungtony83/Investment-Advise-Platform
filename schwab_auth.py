@@ -9,10 +9,41 @@ from cryptography.fernet import Fernet
 import json
 import time
 
+import os
+import subprocess
 
-path = os.getenv("SCHWAB_TOKEN_ENCRYP_KEY")
+# Set these before running
+GITHUB_USER = "chungtony83"
+REPO_NAME = "tokens"
+REPO_DIR = "./tokens"
+GITHUB_PAT = os.getenv("GITHUB_PAT")  # Store this securely
 
-key = Fernet(open(path, "rb").read())
+REPO_URL = f"https://{GITHUB_USER}:{GITHUB_PAT}@github.com/{GITHUB_USER}/{REPO_NAME}.git"
+
+def clone_or_pull_repo():
+    if not os.path.exists(REPO_DIR):
+        print("Cloning private repo...")
+        subprocess.run(["git", "clone", REPO_URL, REPO_DIR], check=True)
+    else:
+        print("Pulling latest tokens...")
+        subprocess.run(["git", "-C", REPO_DIR, "pull"], check=True)
+
+def push_updated_tokens(commit_message="Update tokens"):
+    print("Pushing updated tokens...")
+    subprocess.run(["git", "-C", REPO_DIR, "add", "."], check=True)
+    subprocess.run(["git", "-C", REPO_DIR, "commit", "-m", commit_message], check=True)
+    subprocess.run(["git", "-C", REPO_DIR, "push"], check=True)
+
+def get_token_file(filename: str) -> bytes:
+    with open(os.path.join(REPO_DIR, filename), "rb") as f:
+        return f.read()
+
+def write_token_file(filename: str, data: bytes):
+    with open(os.path.join(REPO_DIR, filename), "wb") as f:
+        f.write(data)
+
+
+# key = Fernet(open(path, "rb").read())
 
 def get_refresh_token() -> None:
     client_id = key.decrypt(open('./tokens/client_id.enc', 'rb').read()).decode()
@@ -121,4 +152,17 @@ if __name__ == "__main__":
     # print(os.environ['SCHWAB_ACCESS_TOKEN'])
     # client_id = key.decrypt(open('./tokens/client_id.enc', 'rb').read()).decode()
     # token = key.decrypt(open('./tokens/refresh_token.enc', 'rb').read()).decode()
-    token = get_auth_token(manual_update_refresh_code=True)
+    # token = get_auth_token(manual_update_refresh_code=True)
+    
+    
+    # Pull latest tokens before doing anything
+    clone_or_pull_repo()
+
+    # Read a token
+    # refresh_token_encrypted = get_token_file("refresh_token.enc")
+
+    # # Write a new token
+    # write_token_file("access_token.enc", b"some encrypted token content")
+
+    # # Commit and push back
+    # push_updated_tokens("Refreshed access token")
