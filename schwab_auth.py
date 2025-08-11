@@ -23,6 +23,13 @@ GITHUB_PAT = os.getenv("GITHUB_PAT")  # Store this securely
 
 REPO_URL = f"https://{GITHUB_USER}:{GITHUB_PAT}@github.com/{GITHUB_USER}/{REPO_NAME}.git"
 
+# Load the encryption key used for decrypting token files. By default, this
+# expects a file named ``token_key.key`` inside the tokens repository, but the
+# location can be overridden with the ``TOKEN_KEY_PATH`` environment variable.
+TOKEN_KEY_PATH = os.getenv("TOKEN_KEY_PATH", os.path.join(REPO_DIR, "token_key.key"))
+with open(TOKEN_KEY_PATH, "rb") as key_file:
+    key = Fernet(key_file.read())
+
 def clone_or_pull_repo():
     if not os.path.exists(REPO_DIR):
         print("Cloning private repo...")
