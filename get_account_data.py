@@ -1,7 +1,8 @@
 
 import requests
 import os
-import schwab_auth
+from schwab_auth import SchwabAuth
+from logging_config import logger
 import pandas as pd
 import datetime
 
@@ -9,7 +10,7 @@ from cryptography.fernet import Fernet
 
 class SchwabApi:
     def __init__(self):
-        self.access_token = schwab_auth.get_auth_token()
+        self.access_token = SchwabAuth().get_token()
         self.account_number_hash = requests.get('https://api.schwabapi.com/trader/v1/accounts/accountNumbers', headers={'Authorization': f'Bearer {self.access_token}'}).json()[0]['hashValue']
     
     def get_account_data(self):

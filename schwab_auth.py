@@ -154,6 +154,7 @@ if __name__ == "__main__":
     # Example usage
     auth = SchwabAuth()
     token = auth.get_token()
+    print(token)
     # Uncomment below to manually refresh tokens
     # auth.get_refresh_token()
     # auth.get_access_token()
