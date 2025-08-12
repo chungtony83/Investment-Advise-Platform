@@ -108,10 +108,6 @@ class SchwabAuth:
         """
         Refreshes tokens if expired and returns the latest access token.
         """
-        dotenv.load_dotenv()
-        access_token_expire = os.getenv("SCHWAB_ACCESS_TOKEN_EXPIRES_TIMES")
-        refresh_token_expire = os.getenv("SCHWAB_REFRESH_TOKEN_EXPIRES_TIMES")
-        now = datetime.now()
 
         if not self.client_id or not self.client_secret:
             print("Client ID or Secret missing.")
