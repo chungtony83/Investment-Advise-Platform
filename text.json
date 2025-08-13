@@ -1,0 +1,245 @@
+{
+    "securitiesAccount": {
+        "type": "CASH",
+        "accountNumber": "87930611",
+        "roundTrips": 0,
+        "isDayTrader": false,
+        "isClosingOnlyRestricted": false,
+        "pfcbFlag": false,
+        "positions": [
+            {
+                "shortQuantity": 0.0,
+                "averagePrice": 444.126,
+                "currentDayProfitLoss": 24.595,
+                "currentDayProfitLossPercentage": 1.12,
+                "longQuantity": 5.0,
+                "settledLongQuantity": 5.0,
+                "settledShortQuantity": 0.0,
+                "instrument": {
+                    "assetType": "COLLECTIVE_INVESTMENT",
+                    "cusip": "78467X109",
+                    "symbol": "DIA",
+                    "description": "SPDR DOW JONES INDUSTRIAL AVRG ETF",
+                    "type": "EXCHANGE_TRADED_FUND"
+                },
+                "marketValue": 2223.2,
+                "maintenanceRequirement": 0.0,
+                "averageLongPrice": 444.12592,
+                "taxLotAverageLongPrice": 444.126,
+                "longOpenProfitLoss": 2.57,
+                "previousSessionLongQuantity": 5.0,
+                "currentDayCost": 0.0
+            },
+            {
+                "shortQuantity": 0.0,
+                "averagePrice": 227.126,
+                "currentDayProfitLoss": 12.3535,
+                "currentDayProfitLossPercentage": 1.09,
+                "longQuantity": 5.0,
+                "settledLongQuantity": 5.0,
+                "settledShortQuantity": 0.0,
+                "instrument": {
+                    "assetType": "EQUITY",
+                    "cusip": "037833100",
+                    "symbol": "AAPL",
+                    "netChange": 2.4707
+                },
+                "marketValue": 1146.45,
+                "maintenanceRequirement": 0.0,
+                "averageLongPrice": 227.125,
+                "taxLotAverageLongPrice": 227.126,
+                "longOpenProfitLoss": 10.82,
+                "previousSessionLongQuantity": 5.0,
+                "currentDayCost": 0.0
+            },
+            {
+                "shortQuantity": 0.0,
+                "averagePrice": 137.45,
+                "currentDayProfitLoss": 46.0,
+                "currentDayProfitLossPercentage": 2.52,
+                "longQuantity": 10.0,
+                "settledLongQuantity": 10.0,
+                "settledShortQuantity": 0.0,
+                "instrument": {
+                    "assetType": "EQUITY",
+                    "cusip": "69608A108",
+                    "symbol": "PLTR",
+                    "netChange": 4.6
+                },
+                "marketValue": 1873.5,
+                "maintenanceRequirement": 0.0,
+                "averageLongPrice": 137.45022,
+                "taxLotAverageLongPrice": 137.45,
+                "longOpenProfitLoss": 499.0,
+                "previousSessionLongQuantity": 10.0,
+                "currentDayCost": 0.0
+            },
+            {
+                "shortQuantity": 0.0,
+                "averagePrice": 571.69,
+                "currentDayProfitLoss": 26.2,
+                "currentDayProfitLossPercentage": 1.12,
+                "longQuantity": 4.0,
+                "settledLongQuantity": 4.0,
+                "settledShortQuantity": 0.0,
+                "instrument": {
+                    "assetType": "COLLECTIVE_INVESTMENT",
+                    "cusip": "922908363",
+                    "symbol": "VOO",
+                    "description": "VANGUARD S&P 500 ETF",
+                    "type": "EXCHANGE_TRADED_FUND"
+                },
+                "marketValue": 2364.08,
+                "maintenanceRequirement": 0.0,
+                "averageLongPrice": 571.6901,
+                "taxLotAverageLongPrice": 571.69,
+                "longOpenProfitLoss": 77.32,
+                "previousSessionLongQuantity": 4.0,
+                "currentDayCost": 0.0
+            },
+            {
+                "shortQuantity": 0.0,
+                "averagePrice": 162.7193333333,
+                "currentDayProfitLoss": 13.05,
+                "currentDayProfitLossPercentage": 0.48,
+                "longQuantity": 15.0,
+                "settledLongQuantity": 15.0,
+                "settledShortQuantity": 0.0,
+                "instrument": {
+                    "assetType": "EQUITY",
+                    "cusip": "67066G104",
+                    "symbol": "NVDA",
+                    "netChange": 0.87
+                },
+                "marketValue": 2742.75,
+                "maintenanceRequirement": 0.0,
+                "averageLongPrice": 162.719333333333,
+                "taxLotAverageLongPrice": 162.7193333333,
+                "longOpenProfitLoss": 301.9600000005,
+                "previousSessionLongQuantity": 15.0,
+                "currentDayCost": 0.0
+            },
+            {
+                "shortQuantity": 0.0,
+                "averagePrice": 99.000666666667,
+                "currentDayProfitLoss": 0.0,
+                "currentDayProfitLossPercentage": 0.0,
+                "longQuantity": 9.0,
+                "settledLongQuantity": 9.0,
+                "settledShortQuantity": 0.0,
+                "instrument": {
+                    "assetType": "FIXED_INCOME",
+                    "cusip": "912797QP5",
+                    "symbol": "912797QP5",
+                    "description": "US Treasury BILL 11/06/2025",
+                    "maturityDate": "2025-11-06T05:00:00.000+00:00",
+                    "variableRate": 0.0
+                },
+                "marketValue": 8911.92,
+                "maintenanceRequirement": 0.0,
+                "averageLongPrice": 99.000685,
+                "taxLotAverageLongPrice": 99.000666666667,
+                "longOpenProfitLoss": 1.85870999997,
+                "previousSessionLongQuantity": 9.0,
+                "currentDayCost": 0.0
+            },
+            {
+                "shortQuantity": 0.0,
+                "averagePrice": 226.8511111111,
+                "currentDayProfitLoss": 28.8,
+                "currentDayProfitLossPercentage": 1.36,
+                "longQuantity": 9.0,
+                "settledLongQuantity": 9.0,
+                "settledShortQuantity": 0.0,
+                "instrument": {
+                    "assetType": "COLLECTIVE_INVESTMENT",
+                    "cusip": "46138G649",
+                    "symbol": "QQQM",
+                    "description": "INVESCO NASDAQ 100 ETF",
+                    "type": "EXCHANGE_TRADED_FUND"
+                },
+                "marketValue": 2150.55,
+                "maintenanceRequirement": 0.0,
+                "averageLongPrice": 226.850555555556,
+                "taxLotAverageLongPrice": 226.8511111111,
+                "longOpenProfitLoss": 108.8900000001,
+                "previousSessionLongQuantity": 9.0,
+                "currentDayCost": 0.0
+            },
+            {
+                "shortQuantity": 0.0,
+                "averagePrice": 152.835,
+                "currentDayProfitLoss": 47.0,
+                "currentDayProfitLossPercentage": 1.36,
+                "longQuantity": 20.0,
+                "settledLongQuantity": 20.0,
+                "settledShortQuantity": 0.0,
+                "instrument": {
+                    "assetType": "EQUITY",
+                    "cusip": "007903107",
+                    "symbol": "AMD",
+                    "netChange": 2.35
+                },
+                "marketValue": 3503.6,
+                "maintenanceRequirement": 0.0,
+                "averageLongPrice": 127.943225,
+                "taxLotAverageLongPrice": 152.835,
+                "longOpenProfitLoss": 446.9,
+                "previousSessionLongQuantity": 20.0,
+                "currentDayCost": 0.0
+            }
+        ],
+        "initialBalances": {
+            "accruedInterest": 0.0,
+            "cashAvailableForTrading": 2892.68,
+            "cashAvailableForWithdrawal": 2892.68,
+            "cashBalance": 2892.68,
+            "bondValue": 0.0,
+            "cashReceipts": 0.0,
+            "liquidationValue": 29602.89,
+            "longOptionMarketValue": 0.0,
+            "longStockValue": 26710.21,
+            "moneyMarketFund": 0.0,
+            "mutualFundValue": 2892.68,
+            "shortOptionMarketValue": 0.0,
+            "shortStockValue": 0.0,
+            "isInCall": false,
+            "unsettledCash": 0.0,
+            "cashDebitCallValue": 0.0,
+            "pendingDeposits": 0.0,
+            "accountValue": 29602.89
+        },
+        "currentBalances": {
+            "accruedInterest": 0.0,
+            "cashBalance": 4892.68,
+            "cashReceipts": 0.0,
+            "longOptionMarketValue": 0.0,
+            "liquidationValue": 29808.73,
+            "longMarketValue": 16004.13,
+            "moneyMarketFund": 0.0,
+            "savings": 0.0,
+            "shortMarketValue": 0.0,
+            "pendingDeposits": 0.0,
+            "mutualFundValue": 0.0,
+            "bondValue": 8911.92,
+            "shortOptionMarketValue": 0.0,
+            "cashAvailableForTrading": 4892.68,
+            "cashAvailableForWithdrawal": 4892.68,
+            "cashCall": 0.0,
+            "longNonMarginableMarketValue": 4892.68,
+            "totalCash": 4892.68,
+            "cashDebitCallValue": 0.0,
+            "unsettledCash": 0.0
+        },
+        "projectedBalances": {
+            "cashAvailableForTrading": 4892.68,
+            "cashAvailableForWithdrawal": 4892.68
+        }
+    },
+    "aggregatedBalance": {
+        "currentLiquidationValue": 29808.73,
+        "liquidationValue": 29808.73
+    }
+}
+
+
