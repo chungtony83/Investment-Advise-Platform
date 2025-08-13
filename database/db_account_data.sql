@@ -36,8 +36,6 @@ CREATE TABLE instrument (
   UNIQUE (symbol, asset_type) -- symbol+asset_type is unique
 );
 
-CREATE UNIQUE INDEX ux_instrument_symbol_asset ON instrument(symbol, asset_type);
-
 -- ===== Positions (one table; per account x instrument x snapshot)
 CREATE TABLE position (
   snapshot_id BIGINT NOT NULL REFERENCES snapshot(id) ON DELETE CASCADE,
