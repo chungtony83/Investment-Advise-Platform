@@ -1,19 +1,41 @@
 @echo off
-echo Setting up Python virtual environment...
+setlocal
 
-python -m pip install --upgrade pip
+echo Checking Python installation...
 
-REM Create virtual environment
-python -m venv venv
+rem --- find a Python executable ---
+set "PYEXE="
+where python >nul 2>&1 && set "PYEXE=python"
+if not "%PYEXE%"=="" goto :have_py
+where py >nul 2>&1 && set "PYEXE=py -3"
 
-REM Activate virtual environment
-call venv\Scripts\activate
+:have_py
+if "%PYEXE%"=="" (
+  echo Python not found. Please install it (e.g., via pyenv-win) and try again.
+  exit /b 1
+)
 
-REM Install dependencies
-pip install -r requirements.txt
+echo Creating Python virtual environment...
+%PYEXE% -m venv venv || (echo Failed to create virtual environment.& exit /b 1)
+
+echo Activating virtual environment...
+call "venv\Scripts\activate.bat" || (echo Failed to activate virtual environment.& exit /b 1)
+
+echo Upgrading pip...
+python -m pip install --upgrade pip || (echo Failed to upgrade pip.& exit /b 1)
+
+if exist requirements.txt (
+  echo Installing dependencies from requirements.txt...
+  python -m pip install -r requirements.txt || (echo Failed to install dependencies.& exit /b 1)
+) else (
+  echo No requirements.txt found. Skipping dependency installation.
+)
 
 echo.
-echo ✅ Setup complete! The virtual environment is ready.
-echo To activate later, run:
-echo venv\Scripts\activate
-pause
+echo Setup complete! Virtual environment is ready.
+echo To activate later:
+echo   CMD:        call venv\Scripts\activate.bat
+echo   PowerShell: .\venv\Scripts\Activate.ps1
+echo To deactivate: deactivate
+
+endlocal

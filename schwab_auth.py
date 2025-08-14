@@ -155,9 +155,11 @@ if __name__ == "__main__":
     auth = SchwabAuth()
     token = auth.get_token()
     print(token)
+    
+    # print(os.getenv("SCHWAB_CLIENT_ID"))
+    # print(os.getenv("SCHWAB_CLIENT_SECRET"))
+    
     # Uncomment below to manually refresh tokens
     # auth.get_refresh_token()
     # auth.get_access_token()
-    
-    
     

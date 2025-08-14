@@ -6,8 +6,6 @@ from logging_config import logger
 import pandas as pd
 import datetime
 
-from cryptography.fernet import Fernet
-
 class SchwabApi:
     def __init__(self):
         self.access_token = SchwabAuth().get_token()
