@@ -5,6 +5,7 @@ from schwab_auth import SchwabAuth
 from logging_config import logger
 import pandas as pd
 import datetime
+import sqlalchemy as sa
 
 class SchwabApi:
     def __init__(self):
@@ -92,34 +93,7 @@ class SchwabApi:
 if __name__ == '__main__':
     api = SchwabApi()
     df = api.get_account_balances()
-    
-    #     'initialBalances_accruedInterest',
-    #    'initialBalances_cashAvailableForTrading',
-    #    'initialBalances_cashAvailableForWithdrawal',
-    #    'initialBalances_cashBalance', 'initialBalances_bondValue',
-    #    'initialBalances_cashReceipts', 'initialBalances_liquidationValue',
-    #    'initialBalances_longOptionMarketValue',
-    #    'initialBalances_longStockValue', 'initialBalances_moneyMarketFund',
-    #    'initialBalances_mutualFundValue',
-    #    'initialBalances_shortOptionMarketValue',
-    #    'initialBalances_shortStockValue', 'initialBalances_isInCall',
-    #    'initialBalances_unsettledCash', 'initialBalances_cashDebitCallValue',
-    #    'initialBalances_pendingDeposits', 'initialBalances_accountValue',
-    #    'currentBalances_accruedInterest', 'currentBalances_cashBalance',
-    #    'currentBalances_cashReceipts', 'currentBalances_longOptionMarketValue',
-    #    'currentBalances_liquidationValue', 'currentBalances_longMarketValue',
-    #    'currentBalances_moneyMarketFund', 'currentBalances_savings',
-    #    'currentBalances_shortMarketValue', 'currentBalances_pendingDeposits',
-    #    'currentBalances_mutualFundValue', 'currentBalances_bondValue',
-    #    'currentBalances_shortOptionMarketValue',
-    #    'currentBalances_cashAvailableForTrading',
-    #    'currentBalances_cashAvailableForWithdrawal',
-    #    'currentBalances_cashCall',
-    #    'currentBalances_longNonMarginableMarketValue',
-    #    'currentBalances_totalCash', 'currentBalances_cashDebitCallValue',
-    #    'currentBalances_unsettledCash',
-    #    'projectedBalances_cashAvailableForTrading',
-    #    'projectedBalances_cashAvailableForWithdrawal'
+
        
     df = df.melt(id_vars=['accountNumber'], var_name='variable', value_name='value')
     df[['variable', 'sub_variable']] = df['variable'].str.split('_', expand=True)

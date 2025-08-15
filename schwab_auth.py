@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import dotenv
 from requests.exceptions import HTTPError
 from logging_config import logger
+import json
 
 class SchwabAuth:
     def __init__(self, redirect_uri = "https://127.0.0.1"):
@@ -19,16 +20,16 @@ class SchwabAuth:
         self.refresh_token_expire = os.getenv("SCHWAB_REFRESH_TOKEN_EXPIRES_TIMES")
         self.redirect_uri = redirect_uri
 
-    def update_client_id_secret(self,) -> None:
+    def update_client_id_secret(self,) -> bool:
         client_id = input("Enter your Schwab Client ID: ").strip()
         client_secret = input("Enter your Schwab Client Secret: ").strip()
         dotenv.set_key(self.dotenv_path, "SCHWAB_CLIENT_ID", client_id)
         dotenv.set_key(self.dotenv_path, "SCHWAB_CLIENT_SECRET", client_secret)
         self.client_id = client_id
         self.client_secret = client_secret
-        return 
+        return True
     
-    def _post_token(self, url: str, data: dict) -> dict:
+    def _post_token(self, url: str, data: dict) -> tuple[dict, bool]:
         resp = None
         try:
             resp = requests.post(url, data=data, headers={
@@ -36,12 +37,12 @@ class SchwabAuth:
                 'Content-Type': 'application/x-www-form-urlencoded'
             }, timeout=(5, 20))
             resp.raise_for_status()  # <-- fail fast on non-2xx
-            return resp.json()       # safe to parse now
+            return resp.json(), True     # safe to parse now
         except HTTPError as e:
             logger.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
-            return {}
+            return json.loads(e.response.text), False
         
-    def update_refresh_token(self) -> None:
+    def get_refresh_token(self) -> bool:
 
         # 1. Construct the authorization URL with response_type=code
         auth_url = f"https://api.schwabapi.com/v1/oauth/authorize?client_id={self.client_id}&redirect_uri={self.redirect_uri}"
@@ -58,7 +59,7 @@ class SchwabAuth:
 
         if not auth_code:
             logger.error("Could not find 'code' parameter in the redirect URL.")
-            return
+            return False
 
         # 4. Exchange the authorization code for access tokens
         token_url = "https://api.schwabapi.com/v1/oauth/token"
@@ -70,29 +71,30 @@ class SchwabAuth:
             "redirect_uri": self.redirect_uri,
         }
         
-        tokens = self._post_token(token_url, data)
+        post_result, to_prase = self._post_token(token_url, data)
 
         # 5. Extract tokens
         
-        if "access_token" in tokens and "refresh_token" in tokens:
-            access_token_expire = (datetime.now() + timedelta(seconds=tokens["expires_in"])).strftime("%Y-%m-%d %H:%M:%S")
-            dotenv.set_key(self.dotenv_path, "SCHWAB_ACCESS_TOKEN", tokens["access_token"])
+        if to_prase:
+            access_token_expire = (datetime.now() + timedelta(seconds=post_result["expires_in"])).strftime("%Y-%m-%d %H:%M:%S")
+            dotenv.set_key(self.dotenv_path, "SCHWAB_ACCESS_TOKEN", post_result["access_token"])
             dotenv.set_key(self.dotenv_path, "SCHWAB_ACCESS_TOKEN_EXPIRES_TIMES", access_token_expire)
-            self.access_token = tokens["access_token"]
+            self.access_token = post_result["access_token"]
             self.access_token_expire = access_token_expire
 
             refresh_token_expire = (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d %H:%M:%S")
-            dotenv.set_key(self.dotenv_path, "SCHWAB_REFRESH_TOKEN", tokens["refresh_token"])
+            dotenv.set_key(self.dotenv_path, "SCHWAB_REFRESH_TOKEN", post_result["refresh_token"])
             dotenv.set_key(self.dotenv_path, "SCHWAB_REFRESH_TOKEN_EXPIRES_TIMES", refresh_token_expire)
-            self.refresh_token = tokens["refresh_token"]
+            self.refresh_token = post_result["refresh_token"]
             self.refresh_token_expire = refresh_token_expire
+            logger.info(f"Access token obtained successfully. Expires at {access_token_expire}")
+            logger.info(f"Refresh token obtained successfully. Expires at {refresh_token_expire}")
+            return True
         else:
             logger.error("Error exchanging authorization code. Please check your credentials and try again.")
-            return
-        
-        return 
+            return False
 
-    def update_access_token(self,) -> None:
+    def get_access_token(self,) -> bool:
 
         token_url = "https://api.schwabapi.com/v1/oauth/token"
 
@@ -101,54 +103,70 @@ class SchwabAuth:
             "refresh_token": self.refresh_token,
         }
 
-        tokens = self._post_token(token_url, data)
+        post_result, to_prase = self._post_token(token_url, data)
 
-        if "access_token" in tokens:
-            access_token_expire = (datetime.now() + timedelta(seconds=tokens['expires_in'])).strftime("%Y-%m-%d %H:%M:%S")
-            dotenv.set_key(self.dotenv_path, "SCHWAB_ACCESS_TOKEN", tokens['access_token'])
+        if to_prase:
+            access_token_expire = (datetime.now() + timedelta(seconds=post_result['expires_in'])).strftime("%Y-%m-%d %H:%M:%S")
+            dotenv.set_key(self.dotenv_path, "SCHWAB_ACCESS_TOKEN", post_result['access_token'])
             dotenv.set_key(self.dotenv_path, "SCHWAB_ACCESS_TOKEN_EXPIRES_TIMES", access_token_expire)
-            self.access_token = tokens['access_token']
+            self.access_token = post_result['access_token']
             self.access_token_expire = access_token_expire
-            return 
+            logger.info(f"Access token refreshed successfully. Expires at {access_token_expire}")
+            return True
+        elif post_result.get("error") == "unsupported_token_type":
+            logger.error("Unsupported token type. Please re-authenticate to get a new access token.")
+            return self.get_refresh_token()
         else:
             logger.error("Error refreshing token")
-            return 
+            return False
 
     def get_token(self):
         """
         Refreshes tokens if expired and returns the latest access token.
         """
-
+        client_id_check = False
+        refresh_token_check = False
+        access_token_check = False
+        
         if not self.client_id or not self.client_secret:
             logger.info("Client ID or Secret missing. Updating...")
-            self.update_client_id_secret()
-            logger.info("Client ID and Secret updated.")
+            client_id_check = self.update_client_id_secret()
+        else:
+            client_id_check = True
+            
+        if self.refresh_token_expire is not None:
+            expire_time = datetime.strptime(self.refresh_token_expire, "%Y-%m-%d %H:%M:%S")
+            if datetime.now() > expire_time:
+                logger.info("Refresh token is about to expire. Refreshing...")
+                refresh_token_check = self.get_refresh_token()
+            elif datetime.now() > expire_time - timedelta(days=2):
+                logger.warning(f"Refresh token expires soon: {expire_time}")
+                refresh_token_check = True
+            else:
+                logger.info(f"Refresh token is valid until {expire_time}")
+                refresh_token_check = True
+        else:
+            logger.info("Refresh token expiration time is missing. Refreshing...")
+            refresh_token_check = self.get_refresh_token()
 
         if self.access_token_expire is not None:
             expire_time = datetime.strptime(self.access_token_expire, "%Y-%m-%d %H:%M:%S")
             if datetime.now() > expire_time - timedelta(seconds=180):
                 logger.info("Access token is about to expire. Refreshing...")
-                self.update_access_token()
-                logger.info("Access token refreshed successfully.")
+                access_token_check = self.get_access_token()
+            else:
+                logger.info(f"Access token is valid until {expire_time}")
+                access_token_check = True
         else:
             logger.info("Access token expiration time is missing. Refreshing...")
-            self.update_access_token()
-            logger.info("Access token refreshed successfully.")
+            access_token_check = self.get_access_token()
 
-        if self.refresh_token_expire is not None:
-            expire_time = datetime.strptime(self.refresh_token_expire, "%Y-%m-%d %H:%M:%S")
-            if datetime.now() > expire_time:
-                logger.info("Refresh token is about to expire. Refreshing...")
-                self.update_refresh_token()
-                logger.info("Refresh token refreshed successfully.")
-            elif datetime.now() > expire_time - timedelta(days=2):
-                logger.warning(f"Refresh token expires soon: {expire_time}")
+        if not (client_id_check and refresh_token_check and access_token_check):
+            logger.error("Failed to get access tokens. Please check your credentials and try again.")
+            return None
         else:
-            logger.info("Refresh token expiration time is missing. Refreshing...")
-            self.update_refresh_token()
-            logger.info("Refresh token refreshed successfully.")
-
-        return self.access_token
+            logger.info("Tokens are valid and up-to-date.")
+            return self.access_token
 
 if __name__ == "__main__":
     # Example usage
@@ -158,6 +176,7 @@ if __name__ == "__main__":
     
     # print(os.getenv("SCHWAB_CLIENT_ID"))
     # print(os.getenv("SCHWAB_CLIENT_SECRET"))
+    # print(os.getenv("SCHWAB_REFRESH_TOKEN"))
     
     # Uncomment below to manually refresh tokens
     # auth.get_refresh_token()

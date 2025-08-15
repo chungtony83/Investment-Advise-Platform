@@ -17,7 +17,7 @@ CREATE TYPE order_special_instruction_enum AS ENUM ('ALL_OR_NONE','DO_NOT_REDUCE
 CREATE TABLE orders (
   order_id           BIGINT PRIMARY KEY,                        -- e.g. 1003060390456, unique per Schwab sample  
   account_id         BIGINT NOT NULL REFERENCES securities_account(id) ON DELETE CASCADE,
-  fetched_snapshot_id BIGINT NOT NULL REFERENCES snapshot(id) ON DELETE CASCADE,  -- when you pulled it (fits your snapshot model) :contentReference[oaicite:14]{index=14}
+  snapshot_id        BIGINT NOT NULL REFERENCES snapshot(id) ON DELETE CASCADE,  -- when you pulled it (fits your snapshot model) :contentReference[oaicite:14]{index=14}
   session            order_session_enum,
   duration           order_duration_enum,
   order_type         order_type_enum,
@@ -37,11 +37,8 @@ CREATE TABLE orders (
   close_time         TIMESTAMPTZ,
   tag                TEXT,         -- e.g. API_TOS:FUNDAMENTALS / POS_STMT  
   account_number     TEXT NOT NULL, -- denormalized for quick joins / validation  
-  UNIQUE (order_id, account_id)
+  PRIMARY KEY (order_id, account_id)
 );
-
-CREATE INDEX ix_orders_account_time ON orders(account_id, entered_time);
-CREATE INDEX ix_orders_status ON orders(status);
 
 -- ====== ORDER LEGS (EQUITY / FIXED_INCOME etc., per legId)
 CREATE TABLE order_leg (
