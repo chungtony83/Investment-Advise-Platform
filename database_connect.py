@@ -8,7 +8,7 @@ from typing import Literal
 dotenv.load_dotenv()
 dotenv_path = dotenv.find_dotenv()
 
-class database_connector:
+class connector:
     def __init__(self, user=os.getenv("POSTGRES_DB_USERNAME"), password=os.getenv("POSTGRES_DB_PASSWORD"), address='localhost', port=5432, db_name='investment_advisor_ods'):
         if not user:
             user = input("Enter your PostgreSQL username: ").strip()
