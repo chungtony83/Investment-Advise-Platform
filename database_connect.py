@@ -55,7 +55,7 @@ class connector:
             logger.error(f"Error inserting record into table '{table_name}': {e}")
         
 if __name__ == "__main__":
-    db = database_connector()
+    db = connector()
     query = "SELECT * FROM your_table_name LIMIT 10;"
     df = db.query_data(query)
     print(df.head())
