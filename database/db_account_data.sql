@@ -8,7 +8,7 @@ CREATE TYPE asset_type_enum AS ENUM (
 -- ===== Snapshots (track when you pulled the data)
 CREATE TABLE snapshot (
   id BIGSERIAL PRIMARY KEY,
-  as_of TIMESTAMPTZ NOT NULL DEFAULT now()
+  date_time TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- ===== Accounts

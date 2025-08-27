@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import os
 import dotenv
 from logging_config import logger
@@ -20,7 +20,12 @@ class connector:
         self.connection = self.engine.connect()
         pass
 
-    def query_data(self, query: str) -> pd.DataFrame:
+    def query_data(self, query: str):
+        cursor = self.connection.execute(text(query))
+        result = cursor.fetchall()
+        return result
+    
+    def query_dataframe(self, query: str) -> pd.DataFrame:
         """Executes a SQL query and returns the result as a DataFrame."""
         try:
             df = pd.read_sql_query(query, self.connection)
@@ -28,6 +33,16 @@ class connector:
         except Exception as e:
             logger.error(f"Error executing query: {e}")
             return pd.DataFrame()
+    
+    def query_columns(self, table_name: str) -> list:
+        """Returns a list of column names for the specified table."""
+        try:
+            query = f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table_name}';"
+            df = pd.read_sql_query(query, self.connection)
+            return df['column_name'].tolist()
+        except Exception as e:
+            logger.error(f"Error fetching columns for table '{table_name}': {e}")
+            return []
     
     def insert_dataframe(self, df: pd.DataFrame, table_name: str, if_exists: Literal['fail', 'replace', 'append'] = "append", chunksize: int|None = None) -> None:
         """
@@ -53,9 +68,17 @@ class connector:
             logger.info(f"Successfully inserted record into table '{table_name}'.")
         except Exception as e:
             logger.error(f"Error inserting record into table '{table_name}': {e}")
+    
+    def get_snapshot_id(self,) -> int:
+        cursor = self.connection.execute(text("INSERT INTO snapshot DEFAULT VALUES RETURNING id;"))
+        row = cursor.fetchone()
+        if row is None:
+            logger.error("No snapshot ID returned from database.")
+            return -1
+        return row[0]
         
 if __name__ == "__main__":
     db = connector()
     query = "SELECT * FROM your_table_name LIMIT 10;"
-    df = db.query_data(query)
+    df = db.query_dataframe(query)
     print(df.head())

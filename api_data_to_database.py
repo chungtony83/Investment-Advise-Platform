@@ -6,24 +6,74 @@ import datetime
 api = SchwabApi()
 column_mapping = {
     'accountNumber': 'account_number',
+    'securitiesAccount.accountNumber': 'account_number',
     'type': 'account_type',
     'roundTrips': 'round_trips',
     'isDayTrader': 'is_day_trader',
     'isClosingOnlyRestricted': 'is_closing_only_restricted',
     'pfcbFlag': 'pfcb_flag',
-    'hashValue':'hash_value'
+    'hashValue':'hash_value',
+    'longQuantity': 'long_quantity',
+    'shortQuantity': 'short_quantity',
+    'averagePrice': 'average_price',
+    'averageLongPrice': 'average_long_price',
+    'taxLotAverageLongPrice': 'taxlot_average_long_price',
+    'currentDayProfitLoss': 'current_day_profit_loss',
+    'currentDayProfitLossPercentage': 'current_day_profit_loss_percentage',
+    'longOpenProfitLoss': 'long_open_profit_loss',
+    'marketValue': 'market_value',
+    'maintenanceRequirement': 'maintenance_requirement',
+    'previousSessionLongQuantity': 'previous_session_long_quantity',
+    'currentDayCost': 'current_day_cost',
+    'assetType': 'asset_type',
+    'type': 'etf_type',
+    'netChange': 'net_change',
+    'maturityDate': 'maturity_date',
+    'variableRate': 'variable_rate',
+    
 }
 
-def data_securities_account():
-    json_data = api.get_api_data('accounts')[0]
-    df = pd.json_normalize(json_data['securitiesAccount'])
+database = connector()
+def get_account_data():
+    json_data_account = api.get_api_data('accounts')[0]
+    json_data_account_numbers = api.get_api_data('account_numbers')[0]
+    snapshot_id = database.get_snapshot_id()
+    
+    # Securities Account
+    df_securities_account = pd.json_normalize(json_data_account['securitiesAccount'])\
+        [['accountNumber', 'type', 'roundTrips', 'isDayTrader', 'isClosingOnlyRestricted', 'pfcbFlag']]
+    df_securities_account = df_securities_account.merge(pd.json_normalize(json_data_account_numbers), left_on='accountNumber', right_on='accountNumber')
+    
+    # Positions
+    df_positions = pd.json_normalize(json_data_account,record_path=['securitiesAccount', 'positions'], meta=[['securitiesAccount', 'accountNumber']], max_level=0)
+    df_positions = df_positions.rename(columns=column_mapping)
+    # Instruments
+    df_instruments = pd.json_normalize(df_positions['instrument'].tolist())
+    df_instruments = df_instruments.rename(columns=column_mapping)
+    
+    df_positions['cusip'] = df_instruments['cusip']
+    df_positions = df_positions.merge(database.query_dataframe("SELECT id as instrument_id, cusip FROM instrument;"), on='cusip', how='left')
+    df_positions = df_positions.merge(database.query_dataframe("SELECT id as account_id, account_number FROM securities_account;"), left_on='account_number', right_on='account_number', how='left')
+    df_positions['snapshot_id'] = snapshot_id
+    
+    
+    
+    
+    return df
     
 if __name__ == "__main__":
-    api = SchwabApi()
-    json_data = api.get_api_data('accounts')[0]
-    df = pd.json_normalize(json_data['securitiesAccount'])\
-        [['accountNumber', 'type', 'roundTrips', 'isDayTrader', 'isClosingOnlyRestricted', 'pfcbFlag']]
-    df = df.merge(pd.json_normalize(api.get_api_data('account_numbers')[0]), left_on='accountNumber', right_on='accountNumber')
+    json_data_account = api.get_api_data('accounts')[0]
+    json_data_account_numbers = api.get_api_data('account_numbers')[0]
+    # df_securities_account = pd.json_normalize(json_data_account['securitiesAccount'])\
+    #     [['accountNumber', 'type', 'roundTrips', 'isDayTrader', 'isClosingOnlyRestricted', 'pfcbFlag']]
+    # df_securities_account = df_securities_account.merge(pd.json_normalize(json_data_account_numbers), left_on='accountNumber', right_on='accountNumber')
+    
+    df_positions = pd.json_normalize(json_data_account,record_path=['securitiesAccount', 'positions'], meta=[['securitiesAccount', 'accountNumber']], max_level=0)
+    df_positions = df_positions.rename(columns=column_mapping)
+    
+    
+    df_instruments = pd.json_normalize(df_positions['instrument'].tolist())
+    df_instruments = df_instruments.rename(columns=column_mapping)
 
 
     
