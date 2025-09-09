@@ -6,13 +6,13 @@ CREATE TYPE asset_type_enum AS ENUM (
 );
 
 -- ===== Snapshots (track when you pulled the data)
-CREATE TABLE snapshot (
+CREATE TABLE ods.snapshot (
   id BIGSERIAL PRIMARY KEY,
   date_time TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- ===== Accounts
-CREATE TABLE securities_account (
+CREATE TABLE ods.securities_account (
   id BIGSERIAL PRIMARY KEY,
   account_number TEXT UNIQUE NOT NULL,
   hash_value TEXT NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE securities_account (
 );
 
 -- ===== Instruments (covers equity/ETF/fixed-income from sample)
-CREATE TABLE instrument (
+CREATE TABLE ods.instrument (
   id BIGSERIAL PRIMARY KEY,
   asset_type asset_type_enum NOT NULL,
   symbol TEXT,           -- e.g. AAPL, VOO, 912797QP5
@@ -37,10 +37,10 @@ CREATE TABLE instrument (
 );
 
 -- ===== Positions (one table; per account x instrument x snapshot)
-CREATE TABLE position (
-  snapshot_id BIGINT NOT NULL REFERENCES snapshot(id) ON DELETE CASCADE,
-  account_id  BIGINT NOT NULL REFERENCES securities_account(id) ON DELETE CASCADE,
-  instrument_id BIGINT NOT NULL REFERENCES instrument(id),
+CREATE TABLE ods.position (
+  snapshot_id BIGINT NOT NULL REFERENCES ods.snapshot(id) ON DELETE CASCADE,
+  account_id  BIGINT NOT NULL REFERENCES ods.securities_account(id) ON DELETE CASCADE,
+  instrument_id BIGINT NOT NULL REFERENCES ods.instrument(id),
   long_quantity DOUBLE PRECISION,
   short_quantity DOUBLE PRECISION,
   average_price DOUBLE PRECISION,
@@ -58,9 +58,9 @@ CREATE TABLE position (
 
 -- ===== Balances
 -- Initial (has extra fields in sample)
-CREATE TABLE account_initial_balances (
-  snapshot_id BIGINT NOT NULL REFERENCES snapshot(id) ON DELETE CASCADE,
-  account_id  BIGINT NOT NULL REFERENCES securities_account(id) ON DELETE CASCADE,
+CREATE TABLE ods.account_initial_balances (
+  snapshot_id BIGINT NOT NULL REFERENCES ods.snapshot(id) ON DELETE CASCADE,
+  account_id  BIGINT NOT NULL REFERENCES ods.securities_account(id) ON DELETE CASCADE,
   accrued_interest NUMERIC,
   cash_available_for_trading NUMERIC,
   cash_available_for_withdrawal NUMERIC,
@@ -83,9 +83,9 @@ CREATE TABLE account_initial_balances (
 );
 
 -- Current (matches your sample keys)
-CREATE TABLE account_current_balances (
-  snapshot_id BIGINT NOT NULL REFERENCES snapshot(id) ON DELETE CASCADE,
-  account_id  BIGINT NOT NULL REFERENCES securities_account(id) ON DELETE CASCADE,
+CREATE TABLE ods.account_current_balances (
+  snapshot_id BIGINT NOT NULL REFERENCES ods.snapshot(id) ON DELETE CASCADE,
+  account_id  BIGINT NOT NULL REFERENCES ods.securities_account(id) ON DELETE CASCADE,
   accrued_interest NUMERIC,
   cash_balance NUMERIC,
   cash_receipts NUMERIC,
@@ -110,17 +110,17 @@ CREATE TABLE account_current_balances (
 );
 
 -- Projected (sample only shows the two fields)
-CREATE TABLE account_projected_balances (
-  snapshot_id BIGINT NOT NULL REFERENCES snapshot(id) ON DELETE CASCADE,
-  account_id  BIGINT NOT NULL REFERENCES securities_account(id) ON DELETE CASCADE,
+CREATE TABLE ods.account_projected_balances (
+  snapshot_id BIGINT NOT NULL REFERENCES ods.snapshot(id) ON DELETE CASCADE,
+  account_id  BIGINT NOT NULL REFERENCES ods.securities_account(id) ON DELETE CASCADE,
   cash_available_for_trading NUMERIC,
   cash_available_for_withdrawal NUMERIC,
   PRIMARY KEY (snapshot_id, account_id)
 );
 
 -- Aggregated balance block in sample
-CREATE TABLE aggregated_balance (
-  snapshot_id BIGINT PRIMARY KEY REFERENCES snapshot(id) ON DELETE CASCADE,
+CREATE TABLE ods.aggregated_balance (
+  snapshot_id BIGINT PRIMARY KEY REFERENCES ods.snapshot(id) ON DELETE CASCADE,
   current_liquidation_value NUMERIC,
   liquidation_value NUMERIC
 );

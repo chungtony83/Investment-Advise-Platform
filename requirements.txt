@@ -7,3 +7,5 @@ flask            # Optional: if you're building a web dashboard
 python-dotenv     # For managing API keys / config securely
 cryptography
 dotenv
+psycopg2
+psycopg2-binary

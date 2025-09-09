@@ -73,12 +73,14 @@ if __name__ == "__main__":
     #     [['accountNumber', 'type', 'roundTrips', 'isDayTrader', 'isClosingOnlyRestricted', 'pfcbFlag']]
     # df_securities_account = df_securities_account.merge(pd.json_normalize(json_data_account_numbers), left_on='accountNumber', right_on='accountNumber')
     
-    df_positions = pd.json_normalize(json_data_account,record_path=['securitiesAccount', 'positions'], meta=[['securitiesAccount', 'accountNumber']], max_level=0)
-    df_positions = df_positions.rename(columns=column_mapping)
+    # df_positions = pd.json_normalize(json_data_account,record_path=['securitiesAccount', 'positions'], meta=[['securitiesAccount', 'accountNumber']], max_level=0)
+    # df_positions = df_positions.rename(columns=column_mapping)
     
     
-    df_instruments = pd.json_normalize(df_positions['instrument'].tolist())
-    df_instruments = df_instruments.rename(columns=column_mapping)
+    # df_instruments = pd.json_normalize(df_positions['instrument'].tolist())
+    # df_instruments = df_instruments.rename(columns=column_mapping)
+    df_securities_account, df_instruments, df_positions = get_account_data()
+    
 
 
     
