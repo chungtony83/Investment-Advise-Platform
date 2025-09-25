@@ -9,7 +9,7 @@ dotenv.load_dotenv()
 dotenv_path = dotenv.find_dotenv()
 
 class connector:
-    def __init__(self, user=os.getenv("POSTGRES_DB_USERNAME"), password=os.getenv("POSTGRES_DB_PASSWORD"), address='localhost', port=5432, db_name='investment_advisor', schema='ods'):
+    def __init__(self, schema, user=os.getenv("POSTGRES_DB_USERNAME"), password=os.getenv("POSTGRES_DB_PASSWORD"), address='localhost', port=5432, db_name='investment_advisor'):
         if not user:
             user = input("Enter your PostgreSQL username: ").strip()
             dotenv.set_key(dotenv_path, "POSTGRES_DB_USERNAME", user)
@@ -18,6 +18,7 @@ class connector:
             dotenv.set_key(dotenv_path, "POSTGRES_DB_PASSWORD", password)
         self.engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{address}:{port}/{db_name}')
         self.connection = self.engine.connect()
+        self.connection.execute(text(f"SET search_path TO {schema}"))
         self.db_name = db_name
         self.schema = schema
 
@@ -51,11 +52,11 @@ class connector:
         Supports chunked insertion for large DataFrames via the chunksize parameter.
         """
         try:
-            df = df[[col for col in df.columns if col in self.query_columns(table_name)]]
+            filtered_df = df[[col for col in df.columns if col in self.query_columns(table_name)]]
             if chunksize is not None:
-                df.to_sql(table_name, self.engine, if_exists=if_exists, index=False, chunksize=chunksize)
+                filtered_df.to_sql(table_name, self.engine, schema=self.schema, if_exists=if_exists, index=False, chunksize=chunksize)
             else:
-                df.to_sql(table_name, self.engine, if_exists=if_exists, index=False)
+                filtered_df.to_sql(table_name, self.engine, schema=self.schema, if_exists=if_exists, index=False)
             logger.info(f"Successfully inserted DataFrame into table '{table_name}'.")
         except Exception as e:
             logger.error(f"Error inserting DataFrame into table '{table_name}': {e}")
@@ -162,7 +163,12 @@ class connector:
             logger.error(f"Bulk update error for '{table_name}': {e}")
 
 if __name__ == "__main__":
-    db = connector()
+    db = connector(schema='ods')
     query = "SELECT * FROM information_schema.tables LIMIT 10;"
     df = db.query_dataframe(query)
-    print(df.head())
+    # print(df.head())
+    # df = pd.read_csv(os.path.expanduser('~/Documents/watch_list.csv'))
+    # db_ods = connector(schema='ods')
+    # db_ods.insert_dataframe(df, 'watch_list', if_exists='append')
+    # cols = db_ods.query_columns('watch_list')
+    # df = df[[col for col in df.columns if col in cols]]
