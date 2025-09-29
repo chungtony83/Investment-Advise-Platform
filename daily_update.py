@@ -4,7 +4,7 @@ from database_connect import connector
 from logging_config import logger
 from database_connect import connector
 
-def watch_list_market_data():
+def stock_list_market_data():
     db_ods = connector(schema='ods')
     db_dwd = connector(schema='dwd')
     
